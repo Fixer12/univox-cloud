@@ -8,7 +8,11 @@ RUN apt-get update \
 WORKDIR /srv
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-COPY app ./app
+
+# all files sit side by side in the repository; put them into the app folder here
+COPY main.py ai.py compiler.py prompts.py samples.py validate.py univox.h ./app/
+COPY index.html ./app/static/index.html
+RUN touch app/__init__.py
 
 # build the Arduino core once while the image is built, so the first request is fast
 RUN python -c "from app.compiler import compile_sketch; r = compile_sketch('#include \"univox.h\"\nvoid setup(){univoxBegin();}\nvoid loop(){}'); print(r.ok, r.log); assert r.ok"
